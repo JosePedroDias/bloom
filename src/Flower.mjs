@@ -41,7 +41,7 @@ export class Flower {
         /* if (this.petals.length >= NUM_PETALS) {
             throw new Error('too many petals!');
         } */
-        
+
         if (this.petals.some(pp => pp.id === p.id)) {
             throw new Error('petal already exists!');
         }
@@ -82,6 +82,14 @@ export class Flower {
 
     getNumberOfPetals() {
         return this.petals.length;
+    }
+
+    getHistogram() {
+        const h = [];
+        for (let i = 0; i < NUM_COLORS; ++i) {
+            h.push(this.getNumberOfPetalsWithColor(i));
+        }
+        return h;
     }
 
     getExistingColorIndices() {
