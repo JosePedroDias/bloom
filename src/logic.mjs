@@ -133,6 +133,13 @@ export const distributeAroundFlower = (board, toFlower, yetToDo, exhausted, onMo
             }
 
             transferSimple(toFlower2, toFlower, colorIdx2);
+
+            onMove();
+            handleFlower(board, toFlower2, yetToDo, onCombo);
+
+            if (!toFlower2.isFull()) {
+                yetToDo.add(toFlower2);
+            }
         }
 
         const key = `#${fromFlower.id} ->(${colorIdx})-> #${toFlower.id} ${toFlower.getHistogram()}`;
