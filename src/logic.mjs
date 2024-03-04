@@ -145,7 +145,7 @@ export const distributeAroundFlower = (board, toFlower, yetToDo, exhausted, onMo
         const key = `#${fromFlower.id} ->(${colorIdx})-> #${toFlower.id} ${toFlower.getHistogram()}`;
         if (exhausted.has(key)) return false;
         exhausted.add(key);
-        //console.log(key);
+        console.log(key);
 
         transferSimple(toFlower, fromFlower, colorIdx);
 

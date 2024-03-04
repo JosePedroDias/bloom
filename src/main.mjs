@@ -43,7 +43,7 @@ const organizeBoard = async (optFlower) => {
         }
     }
 
-    //console.log('done');
+    console.log('done');
 
     if (score.combos === startCombos) {
         score.combos = 0;

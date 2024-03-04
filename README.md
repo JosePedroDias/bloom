@@ -14,11 +14,13 @@
 ## TODO
 
 - logic
-    - if having to discard a petal, send it to a neighbor having it (currently that isn't checked)
-    - avoid endless petal transfer loops
+    - avoid endless petal transfer loops (almost there!)
     - improve flower/board generation progression
+    - implement: double flowers...
+    - butterfly...
+    - boosters...
 - visuals
-    - show score label where it increases (~ +20XP)
+    - (not very relevant at all) show score label where it increases (~ +20XP)
 
 ## aux
 
