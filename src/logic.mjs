@@ -69,8 +69,9 @@ export const handleFlower = (board, f, yetToDo, onCombo) => {
     return false;
 }
 
-export const distributeAroundFlower = (board, toFlower, yetToDo, onMove, onCombo) => {
+export const distributeAroundFlower = (board, toFlower, yetToDo, exhausted, onMove, onCombo) => {
     const surroundingFlowers = board.getNeighbors(toFlower.pos);
+    shuffleInPlace(surroundingFlowers);
 
     const myColors = toFlower.getExistingColorIndices();
 
@@ -112,10 +113,32 @@ export const distributeAroundFlower = (board, toFlower, yetToDo, onMove, onCombo
         const fromFlower = candidate.from[0].flower;
 
         const petalsOfOtherColors = toFlower.getPetalsWithoutColor(colorIdx);
-        if (petalsOfOtherColors.length > 0) {
+        shuffleInPlace(petalsOfOtherColors);
+        if (petalsOfOtherColors.length > 0 && surroundingFlowers.length > 0) {
             const colorIdx2 = petalsOfOtherColors[0].colorIdx;
-            transferSimple(fromFlower, toFlower, colorIdx2);
+
+            const candidates2 = [];
+            shuffleInPlace(surroundingFlowers);
+            for (const flower2 of surroundingFlowers) {
+                if (flower2.isFull()) continue;
+                const otherCount = flower2.getNumberOfPetalsWithColor(colorIdx2);
+                if (otherCount === 0) continue;
+                candidates2.push({ flower: flower2, count: otherCount });
+            }
+            
+            let toFlower2 = surroundingFlowers[0];
+            if (candidates2.length > 0) {
+                candidates2.sort((a, b) => b.count - a.count); // descending
+                toFlower2 = candidates2[0].flower;
+            }
+
+            transferSimple(toFlower2, toFlower, colorIdx2);
         }
+
+        const key = `#${fromFlower.id} ->(${colorIdx})-> #${toFlower.id} ${toFlower.getNumberOfPetals()}`;
+        if (exhausted.has(key)) return false;
+        exhausted.add(key);
+        //console.log(key);
 
         transferSimple(toFlower, fromFlower, colorIdx);
 
@@ -123,9 +146,13 @@ export const distributeAroundFlower = (board, toFlower, yetToDo, onMove, onCombo
         handleFlower(board, fromFlower, yetToDo, onCombo);
         handleFlower(board, toFlower,   yetToDo, onCombo);
 
-        if (!toFlower.isFull()) yetToDo.add(toFlower);
+        if (!toFlower.isFull()) {
+            yetToDo.add(toFlower);
+        }
 
-        if (!fromFlower.isEmpty()) yetToDo.add(fromFlower);
+        if (!fromFlower.isEmpty()) {
+            yetToDo.add(fromFlower);
+        }
 
         return true;
     }

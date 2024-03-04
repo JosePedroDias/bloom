@@ -17,10 +17,15 @@ let movePositions = [undefined, undefined];
 
 const { board, next, score } = getState();
 
+let processing = false;
+
 const organizeBoard = async (optFlower) => {
+    processing = true;
+
     const startCombos = score.combos;
 
     const yetToDo = new Set(optFlower ? [optFlower] : board.getAllFilledCells());
+    const exhausted = new Set();
 
     const onMove = () => {
         score.points += Math.pow(2, score.combos);
@@ -29,11 +34,16 @@ const organizeBoard = async (optFlower) => {
 
     while (yetToDo.size > 0) {
         const toFlower = yetToDo.values().next().value;
-        const changed = distributeAroundFlower(board, toFlower, yetToDo, onMove, onCombo);
-        if (!changed) break;
-        redraw();
-        await sleep(MOVE_MS);
+        const changed = distributeAroundFlower(board, toFlower, yetToDo, exhausted, onMove, onCombo);
+        if (changed) {
+            redraw();
+            await sleep(MOVE_MS);
+        } else {
+            yetToDo.delete(toFlower);
+        }
     }
+
+    //console.log('done');
 
     if (score.combos === startCombos) {
         score.combos = 0;
@@ -42,9 +52,12 @@ const organizeBoard = async (optFlower) => {
     if (isGameOver(board)) {
         window.alert('game over!');
     }
+
+    processing = false;
 }
 
 const handleMove = async ([from, to]) => {
+    if (processing) return;
     if (from[1] !== 8) return;
     if (to[0] < 1 || to[0] > 4) return;
     if (to[1] < 1 || to[1] > 6) return;

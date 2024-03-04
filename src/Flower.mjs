@@ -37,9 +37,11 @@ export class Flower {
     }
 
     add(p) {
-        if (this.petals.length >= NUM_PETALS) {
+        // it can now temporarily happen during distributeAroundFlower
+        /* if (this.petals.length >= NUM_PETALS) {
             throw new Error('too many petals!');
-        }
+        } */
+        
         if (this.petals.some(pp => pp.id === p.id)) {
             throw new Error('petal already exists!');
         }
@@ -78,7 +80,7 @@ export class Flower {
         return this.getPetalsWithColor(colorIdx).length;
     }
 
-    getNumPetals() {
+    getNumberOfPetals() {
         return this.petals.length;
     }
 
