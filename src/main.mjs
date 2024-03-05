@@ -46,6 +46,10 @@ const organizeBoard = async (optFlower) => {
             yetToDo.delete(toFlower);
         }
     }
+    
+    if (yetToDo.size > 0) {
+        redraw();
+    }
 
     // console.log('done');
 
