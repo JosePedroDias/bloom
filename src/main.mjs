@@ -8,7 +8,7 @@ const CW = 6;
 const CH = 10;
 
 const MOVE_MS = 310;
-const DRAG_MS = 1000 / 10;
+const DRAG_MS = 1000 / 20;
 
 const MAX_STEPS = 30;
 

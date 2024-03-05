@@ -44,7 +44,7 @@ const petalView = (petal, [dx, dy] = [0, 0], immediate = false) => {
         {
             key: petal.id,
             id: `petal-${petal.id}`,
-            transform: `translate(${x + dx}, ${y + dy}) rotate(${petal.angle} 0.5 0.5)`,
+            transform: `translate(${x + dx}, ${y + dy}) rotate(${petal.angle}, 0.5, 0.5)`,
             d: PETAL_SHAPE,
             fill,
             stroke,
