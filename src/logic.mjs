@@ -24,12 +24,8 @@ const createFlower = (maxPetals = NUM_PETALS, pos = [0, 0]) => {
 
 export function getState() {
     const board = new Board();
-    for (const [xi, yi] of board.getPositions()) {
-        const skipFlower = Math.random() > BOARD_FLOWER_DENSITY;
-        if (skipFlower) continue;
-        const flower = createFlower(BOARD_FLOWER_MAX_PETALS, [xi, yi]);
-        board.add(flower);
-    }
+    
+    fillBoard(board);
 
     const next = [];
     fillNext(next);
@@ -46,6 +42,32 @@ export function isGameOver(board) {
     return board.allCellsAreFilled();
 }
 
+function fillBoard(board) {
+    for (const [xi, yi] of board.getPositions()) {
+        const skipFlower = Math.random() > BOARD_FLOWER_DENSITY;
+        if (skipFlower) continue;
+        const flower = createFlower(BOARD_FLOWER_MAX_PETALS, [xi, yi]);
+        board.add(flower);
+    }
+}
+
+/* function fillBoard_(board) {
+    {
+        const flower = new Flower([0, 0]);
+        flower.add(new Petal(0));
+        flower.add(new Petal(1));
+        flower.add(new Petal(2));
+        board.add(flower);
+    }
+
+    {
+        const flower = new Flower([1, 0]);
+        flower.add(new Petal(0));
+        flower.add(new Petal(1));
+        board.add(flower);
+    }
+} */
+
 export function fillNext(next) {
     for (let i = 0; i < NUM_NEXT; ++i) {
         const flower = createFlower(NEXT_FLOWER_MAX_PETALS);
@@ -54,6 +76,7 @@ export function fillNext(next) {
 }
 
 export const transferSimple = (toFlower, fromFlower, colorIdx) => {
+    // console.log(`  transfer #${fromFlower.id} -> #${toFlower.id} (${colorIdx})`);
     const petal = fromFlower.removeHavingColor(colorIdx);
     toFlower.add(petal);
 }
@@ -70,6 +93,8 @@ export const handleFlower = (board, f, yetToDo, onCombo) => {
 }
 
 export const distributeAroundFlower = (board, toFlower, yetToDo, exhausted, onMove, onCombo) => {
+    // console.log(`fId:${toFlower.id}, ytd:${yetToDo.size}`);
+
     const surroundingFlowers = board.getNeighbors(toFlower.pos);
     shuffleInPlace(surroundingFlowers);
 
@@ -145,7 +170,7 @@ export const distributeAroundFlower = (board, toFlower, yetToDo, exhausted, onMo
         const key = `#${fromFlower.id} ->(${colorIdx})-> #${toFlower.id} ${toFlower.getHistogram()}`;
         if (exhausted.has(key)) return false;
         exhausted.add(key);
-        console.log(key);
+        // console.log(key);
 
         transferSimple(toFlower, fromFlower, colorIdx);
 

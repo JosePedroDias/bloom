@@ -9,6 +9,8 @@ const CH = 10;
 
 const MOVE_MS = 310;
 
+const MAX_STEPS = 30;
+
 const vb = [0, 0, CW, CH];
 
 const rootEl = document.body;
@@ -26,14 +28,16 @@ const organizeBoard = async (optFlower) => {
 
     const yetToDo = new Set(optFlower ? [optFlower] : board.getAllFilledCells());
     const exhausted = new Set();
+    let steps = 0;
 
     const onMove = () => {
         score.points += Math.pow(2, score.combos);
     }
     const onCombo = () => score.combos += 1;
 
-    while (yetToDo.size > 0) {
+    while (yetToDo.size > 0 && steps < MAX_STEPS) {
         const toFlower = yetToDo.values().next().value;
+        ++steps;
         const changed = distributeAroundFlower(board, toFlower, yetToDo, exhausted, onMove, onCombo);
         if (changed) {
             redraw();
@@ -43,7 +47,7 @@ const organizeBoard = async (optFlower) => {
         }
     }
 
-    console.log('done');
+    // console.log('done');
 
     if (score.combos === startCombos) {
         score.combos = 0;

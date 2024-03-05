@@ -14,7 +14,6 @@
 ## TODO
 
 - logic
-    - avoid endless petal transfer loops (almost there!)
     - improve flower/board generation progression
     - implement: double flowers...
     - butterfly...
