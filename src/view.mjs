@@ -96,7 +96,6 @@ export const boardView = (board, next, score) => {
     for (const [xi, yi] of board.getPositions()) {
         const pos = [xi + 1, yi + 1];
         const isDark = (xi + yi) % 2;
-
         tiles.push(tileView(pos, isDark));
 
         const flower = board.get([xi, yi]);
@@ -109,12 +108,15 @@ export const boardView = (board, next, score) => {
     }
 
     for (let i = 0; i < NUM_NEXT; ++i) {
+        const pos = [1 + i, 8];
+        const isDark = [pos[0] + pos[1] + 1] % 2;
+        tiles.push(tileView(pos, isDark));
+
         const flower = next[i];
         if (flower) {
-            const nextDelta = [1 + i, 8];
-            flowers.push(flowerView(flower, nextDelta));
+            flowers.push(flowerView(flower, pos));
             for (const petal of flower.petals) {
-                petals.push(petalView(petal, nextDelta));
+                petals.push(petalView(petal, pos));
             }
         }
     }
