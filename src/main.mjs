@@ -7,7 +7,7 @@ import { boardView } from './view.mjs';
 const CW = 6;
 const CH = 10;
 
-const MOVE_MS = 420;
+const MOVE_MS = 310;
 
 const vb = [0, 0, CW, CH];
 

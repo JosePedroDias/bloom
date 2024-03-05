@@ -15,11 +15,11 @@ svg {
 }
 
 path, circle {
-    transition: transform 400ms ease-in-out;
+    transition: transform 300ms;
 }
 
-.enter { animation: fade-in 400ms;  }
-.leave { animation: fade-out 400ms; }
+.enter { animation: fade-in 150ms;  }
+.leave { animation: fade-out 150ms; }
 
 @keyframes fade-in {
     from { opacity: 0; }

@@ -1,9 +1,22 @@
 import { default as m } from '../vendor/mithril.mjs';
 
-export const PETAL_COLORS = ['#D22', '#2D2', '#22D', '#DD2', '#D82', '#D2D'];
+import { hsl, times } from './utils.mjs';
+import { NUM_COLORS, NUM_NEXT } from './logic.mjs';
+
+const STROKE_WIDTH = 0.018;
+const CENTER_RADIUS = 0.12;
+
 export const TILE_COLORS = ['#EEE', '#CCC'];
 
-import { NUM_NEXT } from './logic.mjs';
+//const PETAL_SHAPE = `M 0.5 0.5 L 0.3 0.1 C 0.4333 0 0.5667 0 0.7 0.1 Z`;
+const PETAL_SHAPE = `M 0.5 0.5 C 0.4333 0.3667 0.302 0.236 0.333 0.093 C 0.354 -0.004 0.648 -0.006 0.663 0.096 C 0.683 0.248 0.5667 0.3667 0.5 0.5`;
+
+const hues = times(NUM_COLORS).map((i) => i * 360 / NUM_COLORS);
+export const PETAL_COLORS = hues.map(h => hsl(h, 75, 55));
+export const PETAL_STROKES = hues.map(h => hsl(h, 75, 0.75 * 55));
+
+const CENTER_FILL = hsl(55, 100, 80);
+const CENTER_STROKE = hsl(55, 100, 0.75 * 80);
 
 const tileView = ([x, y], isDark) => {
     return m('rect', {
@@ -24,6 +37,7 @@ const onbeforeremove = (vnode) => {
 
 const petalView = (petal, [dx, dy] = [0, 0]) => {
     const fill = PETAL_COLORS[petal.colorIdx];
+    const stroke = PETAL_STROKES[petal.colorIdx];
     const [x, y] = petal.pos;
     return m(
         'path.enter',
@@ -31,8 +45,10 @@ const petalView = (petal, [dx, dy] = [0, 0]) => {
             key: petal.id,
             id: `petal-${petal.id}`,
             transform: `translate(${x + dx}, ${y + dy}) rotate(${petal.angle} 0.5 0.5)`,
-            d: 'M 0.5 0.5 L 0.3 0.1 C 0.4333 0 0.5667 0 0.7 0.1 Z',
+            d: PETAL_SHAPE,
             fill,
+            stroke,
+            'stroke-width': STROKE_WIDTH,
             onbeforeremove,
         },
     );
@@ -48,8 +64,10 @@ const flowerView = (flower, [dx, dy] = [0, 0]) => {
             transform: `translate(${x + dx}, ${y + dy})`,
             cx: 0.5,
             cy: 0.5,
-            r: 0.12,
-            fill: 'yellow',
+            r: CENTER_RADIUS,
+            fill: CENTER_FILL,
+            stroke: CENTER_STROKE,
+            'stroke-width': STROKE_WIDTH,
             onbeforeremove,
         },
     );
