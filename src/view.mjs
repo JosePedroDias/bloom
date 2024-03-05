@@ -35,12 +35,12 @@ const onbeforeremove = (vnode) => {
     return new Promise((resolve) => vnode.dom.addEventListener('animationend', resolve));
 }
 
-const petalView = (petal, [dx, dy] = [0, 0]) => {
+const petalView = (petal, [dx, dy] = [0, 0], immediate = false) => {
     const fill = PETAL_COLORS[petal.colorIdx];
     const stroke = PETAL_STROKES[petal.colorIdx];
     const [x, y] = petal.pos;
     return m(
-        'path.enter',
+        immediate ? 'path' : 'path.enter',
         {
             key: petal.id,
             id: `petal-${petal.id}`,
@@ -54,10 +54,10 @@ const petalView = (petal, [dx, dy] = [0, 0]) => {
     );
 }
 
-const flowerView = (flower, [dx, dy] = [0, 0]) => {
+const flowerView = (flower, [dx, dy] = [0, 0], immediate = false) => {
     const [x, y] = flower.pos;
     return m(
-        'circle.enter',
+        immediate ? 'circle' : 'circle.enter',
         {
             key: flower.id,
             id: `flower-${flower.id}`,
@@ -85,7 +85,7 @@ const scoreView = (score) => {
     }, label);
 }
 
-export const boardView = (board, next, score) => {
+export const boardView = (board, next, score, moving) => {
     //const t = Date.now() / 1000; console.log(`redraw ${t % 100}`);
 
     const tiles = [];
@@ -108,15 +108,20 @@ export const boardView = (board, next, score) => {
     }
 
     for (let i = 0; i < NUM_NEXT; ++i) {
-        const pos = [1 + i, 8];
+        let pos = [1 + i, 8];
         const isDark = [pos[0] + pos[1] + 1] % 2;
         tiles.push(tileView(pos, isDark));
 
         const flower = next[i];
         if (flower) {
-            flowers.push(flowerView(flower, pos));
+            let immediate = false;
+            if (moving.flowerId === flower.id) {
+                pos = moving.pos;
+                immediate = true;
+            }
+            flowers.push(flowerView(flower, pos, immediate));
             for (const petal of flower.petals) {
-                petals.push(petalView(petal, pos));
+                petals.push(petalView(petal, pos, immediate));
             }
         }
     }

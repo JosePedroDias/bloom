@@ -8,6 +8,7 @@ const CW = 6;
 const CH = 10;
 
 const MOVE_MS = 310;
+const DRAG_MS = 1000 / 10;
 
 const MAX_STEPS = 30;
 
@@ -15,9 +16,9 @@ const vb = [0, 0, CW, CH];
 
 const rootEl = document.body;
 let vnode;
-let movePositions = [undefined, undefined];
+let movePositions = [];
 
-const { board, next, score } = getState();
+const { board, next, score, moving } = getState();
 
 let processing = false;
 
@@ -93,23 +94,48 @@ const handleMove = async ([from, to]) => {
     await organizeBoard(newFlower);
 }
 
+// 0=down, 1=up, 2=move
 const onMouse = (i) => (ev) => {
-    if (i === 1) {
-        ev.stopPropagation();
-        ev.preventDefault();
-    }
     const svgEl = vnode.dom;
     const { top, left, width, height } = svgEl.getBoundingClientRect();
+
+    ev.stopPropagation();
+    ev.preventDefault();
+    
     const e = ev.changedTouches ? ev.changedTouches[0] : ev;
     const xRatio = (e.clientX - left) / width;
     const yRatio = (e.clientY - top)  / height;
 
-    const x = Math.floor(vb[0] + xRatio * vb[2]);
-    const y = Math.floor(vb[1] + yRatio * vb[3]);
+    let x = vb[0] + xRatio * vb[2];
+    let y = vb[1] + yRatio * vb[3];
 
-    movePositions[i] = [x, y];
+    if (i === 0 || i === 1) {
+        x = Math.floor(x);
+        y = Math.floor(y);
 
-    if (i === 1) handleMove(movePositions);
+        if (i === 0) {
+            const j = x - 1;
+            const flower = next[j];
+            if (!flower) return;
+            moving.flowerId = flower.id;
+            moving.pos = [x, y];
+        }
+
+        movePositions.push([x, y]);
+        if (i === 1) {
+            handleMove(movePositions);
+            movePositions = [];
+            moving.flowerId = undefined;
+        }
+    }
+    else if (moving.flowerId) {
+        const now = Date.now();
+        if (!moving.now || now - moving.now > DRAG_MS) {
+            moving.pos = [x - 0.5, y - 0.5];
+            redraw();
+            moving.now = now;
+        }
+    }
 };
 
 (async() => {
@@ -124,11 +150,13 @@ const onMouse = (i) => (ev) => {
                     viewBox: `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`,
                     onmousedown: onMouse(0),
                     onmouseup: onMouse(1),
+                    onmousemove: onMouse(2),
                     ontouchstart: onMouse(0),
                     ontouchend: onMouse(1),
+                    ontouchmove: onMouse(2),
                 },
                 [
-                    boardView(board, next, score),
+                    boardView(board, next, score, moving),
                 ]
             );
         }

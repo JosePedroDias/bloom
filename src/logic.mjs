@@ -35,7 +35,9 @@ export function getState() {
         combos: 0,
     };
 
-    return { board, next, score };
+    const moving = { flowerId: undefined, pos: undefined };
+
+    return { board, next, moving, score };
 }
 
 export function isGameOver(board) {
