@@ -146,7 +146,7 @@ const onMouse = (i) => (ev) => {
 };
 
 (async() => {
-    canvas = new Canvas([CW, CH], 10, true);
+    canvas = new Canvas([CW, CH], 50, true, true);
     const el = canvas.el;
 
     el.addEventListener('mousedown',  onMouse(0));

@@ -1,15 +1,25 @@
 const PI2 = 2 * Math.PI;
 
 export class Canvas {
-    constructor(dims = [400, 300], scale = 1, scaleToFit = false) {
+    constructor(dims = [400, 300], scale = 1, scaleToFit = false, useDpi = false) {
+        const dpi = useDpi ? window.devicePixelRatio : 1;
+
         this.dims = Array.from(dims);
         this.targetDims = Array.from(dims);
-        this.scale = scale;
+        this.scale = scale * dpi;
         this.scaleToFit = scaleToFit;
 
         const el = document.createElement('canvas');
-        el.setAttribute('width', dims[0] * scale);
-        el.setAttribute('height', dims[1] * scale);
+
+        const d = [
+            dims[0] * this.scale,
+            dims[1] * this.scale,
+        ];
+        el.setAttribute('width',  Math.floor(d[0]));
+        el.setAttribute('height', Math.floor(d[1]));
+        el.style.width =  `${Math.floor(d[0] / dpi)}px`;
+        el.style.height = `${Math.floor(d[1] / dpi)}px`;
+
         document.body.appendChild(el);
         this.el = el;
         this.ctx = el.getContext('2d');
@@ -21,14 +31,15 @@ export class Canvas {
             const onResize = () => {
                 const W = window.innerWidth;
                 const H = window.innerHeight;
+                const dpi = window.devicePixelRatio;
 
                 const ar = W / H;
 
                 if (ar < this.ar) {
-                    this.scale = W / this.targetDims[0];
+                    this.scale = W / this.targetDims[0] * dpi;
                     
                 } else {
-                    this.scale = H / this.targetDims[1];
+                    this.scale = H / this.targetDims[1] * dpi;
                 }
 
                 this.dims[0] = Math.floor(this.targetDims[0] * this.scale);
@@ -36,7 +47,11 @@ export class Canvas {
 
                 this.el.setAttribute('width', this.dims[0]);
                 this.el.setAttribute('height', this.dims[1]);
-                this.ctx = this.el.getContext('2d'); // TO optional?
+
+                el.style.width = `${Math.floor(this.dims[0] / dpi)}px`;
+                el.style.height = `${Math.floor(this.dims[1] / dpi)}px`;
+
+                //this.ctx = this.el.getContext('2d'); // TO optional?
             }
 
             window.addEventListener('resize', onResize);
