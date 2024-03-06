@@ -14,12 +14,19 @@ svg {
     max-height: 100vh;
 }
 
-path, circle {
+path.enter, circle.enter {
+    -webkit-transition: transform 300ms;
     transition: transform 300ms;
 }
 
-.enter { animation: fade-in 150ms;  }
-.leave { animation: fade-out 150ms; }
+.enter {
+    -webkit-animation: fade-in 150ms;
+    animation: fade-in 150ms; 
+}
+.leave {
+    -webkit-animation: fade-out 150ms;
+    animation: fade-out 150ms;
+}
 
 @keyframes fade-in {
     from { opacity: 0.01; }

@@ -2,7 +2,7 @@ import { redraw, default as m } from '../vendor/mithril.mjs';
 
 import { getState, distributeAroundFlower, fillNext, isGameOver } from './logic.mjs';
 import { sleep } from './utils.mjs';
-import { boardView } from './view.mjs';
+import { boardView } from './view-svg.mjs';
 
 const CW = 6;
 const CH = 10;

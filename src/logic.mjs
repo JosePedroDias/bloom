@@ -70,9 +70,14 @@ function fillBoard(board) {
     }
 } */
 
+export function isNextEmpty(next) {
+    return next.every(f => f === undefined);
+}
+
 export function fillNext(next) {
+    next.splice(0, 4);
     for (let i = 0; i < NUM_NEXT; ++i) {
-        const flower = createFlower(NEXT_FLOWER_MAX_PETALS);
+        const flower = createFlower(NEXT_FLOWER_MAX_PETALS, [i, 7]);
         next.push(flower);
     }
 }

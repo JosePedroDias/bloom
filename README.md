@@ -24,3 +24,4 @@
 ## aux
 
 - https://yqnn.github.io/svg-path-editor/
+- https://simon.html5.org/dump/html5-canvas-cheat-sheet.html

@@ -10,6 +10,7 @@ export const TILE_COLORS = ['#EEE', '#CCC'];
 
 //const PETAL_SHAPE = `M 0.5 0.5 L 0.3 0.1 C 0.4333 0 0.5667 0 0.7 0.1 Z`;
 const PETAL_SHAPE = `M 0.5 0.5 C 0.4333 0.3667 0.302 0.236 0.333 0.093 C 0.354 -0.004 0.648 -0.006 0.663 0.096 C 0.683 0.248 0.5667 0.3667 0.5 0.5`;
+// `M 0.5 0.5 L 0.3 0.1 L 0.5 0 L 0.7 0.1 Z`;
 
 const hues = times(NUM_COLORS).map((i) => i * 360 / NUM_COLORS);
 export const PETAL_COLORS = hues.map(h => hsl(h, 75, 55));
