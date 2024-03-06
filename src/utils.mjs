@@ -20,7 +20,7 @@ export function combination2(n) {
 
 export const transpose = (arr) => arr[0].map((_, colIndex) => arr.map(row => row[colIndex]));
 
-export const randInt = (n) => Math.floor( n * Math.random() );
+export const randInt = (n) => Math.floor(n * Math.random());
 
 export const randFromArray = (arr) => arr[randInt(arr.length)];
 
@@ -65,4 +65,33 @@ export function clamp(n, min, max) {
     if (n < min) return min;
     if (n > max) return max;
     return n;
+}
+
+export function toPolar([x, y]) {
+    const r = Math.sqrt(x * x + y * y);
+    const theta = Math.atan2(y, x);
+    return [r, theta];
+}
+
+export function fromPolar([r, theta]) {
+    return [r * Math.cos(theta), r * Math.sin(theta)];
+}
+
+export function lerp(a, b, r) {
+    return (1 - r) * a + r * b;
+}
+
+export function lerp2(a, b, r) {
+    const r_ = 1 - r;
+    return [
+        r_ * a[0] + r * b[0],
+        r_ * a[1] + r * b[1],
+    ];
+}
+
+export function pingPongRatio(ratio) {
+    if (ratio < 0.5) {
+        return ratio * 2;
+    }
+    return 1 - (ratio - 0.5) * 2;
 }

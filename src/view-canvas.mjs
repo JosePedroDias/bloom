@@ -74,6 +74,9 @@ export const boardView = (board, next, score, moving, canvas) => {
             trackView(flower.id, flowerView);
             canvas.flowers.add(flowerView);
         } else {
+            if (flowerView.pos[0] !== flowerPos[0] || flowerView.pos[1] !== flowerPos[1]) {
+                console.log(`flower pos changed ${flowerView.pos.map(n => n.toFixed(2)).join(',')} -> ${flowerPos.map(n => n.toFixed(2)).join(',')}`);
+            }
             flowerView.pos = flowerPos;
         }
         prevViewIds.delete(flower.id);
@@ -94,6 +97,12 @@ export const boardView = (board, next, score, moving, canvas) => {
                 trackView(petal.id, petalView);
                 canvas.petals.add(petalView);
             } else {
+                if (petalView.pos[0] !== petalPos[0] || petalView.pos[1] !== petalPos[1]) {
+                    console.log(`petal pos changed ${petalView.pos.map(n => n.toFixed(2)).join(',')} -> ${petalPos.map(n => n.toFixed(2)).join(',')}`);
+                }
+                if (petalView.angle !== petal.angle * DEG2RAD) {
+                    console.log(`petal angle changed ${(petalView.angle / DEG2RAD).toFixed(0)} -> ${petal.angle}`);
+                }
                 petalView.pos = petalPos;
                 petalView.angle = petal.angle * DEG2RAD;
             }
