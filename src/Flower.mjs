@@ -75,6 +75,10 @@ export class Flower extends Model {
         return this.petals.filter(p => p.colorIdx !== colorIdx);
     }
 
+    getColorIndicesWithoutColorIdx(colorIdx) {
+        return this.getPetalsWithoutColor(colorIdx).map(p => p.colorIdx);
+    }
+
     getPetalsWithColor(colorIdx) {
         return this.petals.filter(p => p.colorIdx === colorIdx);
     }
@@ -107,7 +111,7 @@ export class Flower extends Model {
         return this.petals.length === NUM_PETALS;
     }
 
-    hasBloomed() {
+    isComplete() {
         if (!this.isFull()) return false;
         const colorIdx = this.petals[0].colorIdx;
         return this.getNumberOfPetalsWithColor(colorIdx) === NUM_PETALS;

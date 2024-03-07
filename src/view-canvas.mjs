@@ -24,6 +24,7 @@ const PETAL_PATH = [
 
 const ANIM_MS = 300;
 
+// 0=red, 1=yellow, 2=green, 3=cyan, 4=blue, 5=magenta
 const hues = times(NUM_COLORS).map((i) => i * 360 / NUM_COLORS);
 const PETAL_COLORS = hues.map(h => hsl(h, 75, 55));
 const PETAL_STROKES = hues.map(h => hsl(h, 75, 0.75 * 55));

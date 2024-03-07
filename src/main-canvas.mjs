@@ -25,7 +25,6 @@ const organizeBoard = async (optFlower) => {
     const startCombos = score.combos;
 
     const yetToDo = new Set(optFlower ? [optFlower] : board.getAllFilledCells());
-    const exhausted = new Set();
     let steps = 0;
 
     const onMove = () => {
@@ -36,7 +35,7 @@ const organizeBoard = async (optFlower) => {
     while (yetToDo.size > 0 && steps < MAX_STEPS) {
         const toFlower = yetToDo.values().next().value;
         ++steps;
-        const changed = distributeAroundFlower(board, toFlower, yetToDo, exhausted, onMove, onCombo);
+        const changed = distributeAroundFlower(board, toFlower, yetToDo, onMove, onCombo);
         if (changed) {
             redraw();
             await sleep(MOVE_MS);

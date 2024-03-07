@@ -92,7 +92,7 @@ export const transferSimple = (toFlower, fromFlower, colorIdx) => {
 
 export const handleFlower = (board, f, yetToDo, onCombo) => {
     const isEmpty = f.isEmpty();
-    if (isEmpty || f.hasBloomed()) {
+    if (isEmpty || f.isComplete()) {
         yetToDo.delete(f);
         board.remove(f);
         if (!isEmpty) onCombo();
@@ -101,92 +101,73 @@ export const handleFlower = (board, f, yetToDo, onCombo) => {
     return false;
 }
 
-export const distributeAroundFlower = (board, toFlower0, yetToDo, exhausted, onMove, onCombo) => {
-    // console.log(`fId:${toFlower.id}, ytd:${yetToDo.size}`);
-
-    const surroundingFlowers = [toFlower0, ...board.getNeighbors(toFlower0.pos)];
-    shuffleInPlace(surroundingFlowers);
-
-    const myColors = toFlower0.getExistingColorIndices();
+export const findGoodTransfer = (flowers, myColors, fromFlowerFixed) => {
+    shuffleInPlace(flowers);
 
     const candidates = [];
 
-    for (const myColor of myColors) {
-        const candidate = { colorIdx: myColor, from: [] };
+    for (const colorIdx of myColors) {
+        const owners = [];
 
-        for (const flower2 of surroundingFlowers) {
-            const count = flower2.getNumberOfPetalsWithColor(myColor);
-            if (count === 0) continue;
-            candidate.from.push({ flower: flower2, count });
+        for (const flower of flowers) {
+            const count = flower.getNumberOfPetalsWithColor(colorIdx);
+            if (count === 0 && !fromFlowerFixed) continue;
+            owners.push({ flower, count });
         }
 
-        if (candidate.from.length > 1) {
-            candidate.total = candidate.from.reduce((sum, { count }) => sum + count, 0);
-            candidates.push(candidate);
+        if (owners.length > 1 || (fromFlowerFixed && owners.length > 0)) {
+            const total = owners.reduce((sum, { count }) => sum + count, 0);
+            owners.sort((a, b) => b.count - a.count); // descending
+
+            const toFlower = owners[0].flower;
+            const fromFlower = fromFlowerFixed || owners[owners.length - 1].flower;
+            candidates.push({ total, colorIdx, fromFlower, toFlower });
         }
     }
 
     if (candidates.length > 0) {
         candidates.sort((a, b) => b.total - a.total); // descending
-        const candidate = candidates[0];
+        return candidates[0];
+    }
+}
 
-        const colorIdx = candidate.colorIdx;
-        const from = candidate.from;
-        from.sort((a, b) => b.count - a.count); // descending
-        const toFlower   = from[0].flower;
-        const fromFlower = from[from.length - 1].flower;
+export const distributeAroundFlower = (board, centerFlower, yetToDo, onMove, onCombo) => {
+    console.log(`distributeAroundFlower: #${centerFlower.id}, ytd:${yetToDo.size}`);
 
-        const petalsOfOtherColors = toFlower.getPetalsWithoutColor(colorIdx);
-        shuffleInPlace(petalsOfOtherColors);
-        if (petalsOfOtherColors.length > 0 && surroundingFlowers.length > 1) {
-            const colorIdx2 = petalsOfOtherColors[0].colorIdx;
-
-            const candidates2 = [];
-            shuffleInPlace(surroundingFlowers);
-            for (const flower2 of surroundingFlowers) {
-                if (flower2 === toFlower) continue;
-                if (flower2.isFull()) continue;
-                const otherCount = flower2.getNumberOfPetalsWithColor(colorIdx2);
-                if (otherCount === 0) continue;
-                candidates2.push({ flower: flower2, count: otherCount });
-            }
-            
-            let toFlower2 = surroundingFlowers[0];
-            if (candidates2.length > 0) {
-                candidates2.sort((a, b) => b.count - a.count); // descending
-                toFlower2 = candidates2[0].flower;
-            }
-
-            transferSimple(toFlower2, toFlower, colorIdx2);
-
-            onMove();
-            handleFlower(board, toFlower2, yetToDo, onCombo);
-
-            if (!toFlower2.isFull()) {
-                yetToDo.add(toFlower2);
-            }
-        }
-
-        const key = `#${fromFlower.id} ->(${colorIdx})-> #${toFlower.id} ${toFlower.getHistogram()}`;
-        if (exhausted.has(key)) return false;
-        exhausted.add(key);
-
+    const onTransfer = ({ colorIdx, fromFlower, toFlower }) => {
+        console.log(`#${fromFlower.id} ->(${colorIdx})-> #${toFlower.id} ${toFlower.getHistogram()}`);
+        
         transferSimple(toFlower, fromFlower, colorIdx);
 
         onMove();
         handleFlower(board, fromFlower, yetToDo, onCombo);
         handleFlower(board, toFlower,   yetToDo, onCombo);
 
-        if (!toFlower.isFull()) {
-            yetToDo.add(toFlower);
-        }
-
-        if (!fromFlower.isEmpty()) {
-            yetToDo.add(fromFlower);
-        }
-
-        return true;
+        if (!toFlower.isFull()) yetToDo.add(toFlower);
+        if (!fromFlower.isEmpty()) yetToDo.add(fromFlower);
     }
+
+    const atMost5Flowers = [centerFlower, ...board.getNeighbors(centerFlower.pos)];
+
+    const centerFlowerColors = centerFlower.getExistingColorIndices();
+
+    const candidate1 = findGoodTransfer(atMost5Flowers, centerFlowerColors);
+    if (!candidate1) return false;
+    console.log('candidate1', candidate1);
     
-    return false;
+    const petalsOfOtherColors = candidate1.toFlower.getColorIndicesWithoutColorIdx(candidate1.colorIdx);
+
+    const atMost4Flowers = atMost5Flowers
+    .filter(f => f !== candidate1.toFlower)
+    .filter(f => !f.isFull());
+
+    const candidate2 = petalsOfOtherColors ? findGoodTransfer(atMost4Flowers, petalsOfOtherColors, candidate1.toFlower) : undefined;
+
+    if (candidate2) {
+        console.log('candidate2', candidate2);
+        onTransfer(candidate2);
+    } 
+    onTransfer(candidate1);
+    
+    return true;
 }
