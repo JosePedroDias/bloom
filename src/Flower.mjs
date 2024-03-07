@@ -1,6 +1,6 @@
 import { unique, times, randInt, shuffleInPlace } from './utils.mjs';
-
 import { Model } from './Model.mjs';
+import { Petal } from './Petal.mjs';
 
 export const NUM_PETALS = 6;
 export const NUM_COLORS = 6;
@@ -8,7 +8,7 @@ export const NUM_COLORS = 6;
 const ANGLE_INC = 360 / NUM_PETALS;
 
 export class Flower extends Model {
-    constructor(pos = [0, 0]) {
+    constructor(pos = [0, 0], petalPairs = []) {
         super();
         
         this.pos = pos;
@@ -17,6 +17,10 @@ export class Flower extends Model {
         this.startAngle = randInt(NUM_PETALS) * ANGLE_INC;
         this.colorOrder = times(NUM_COLORS);
         shuffleInPlace(this.colorOrder);
+
+        for (const [count, colorIdx] of petalPairs) {
+            times(count).forEach(() => this.add(new Petal(colorIdx)));
+        }
     }
 
     setPos(pos) {

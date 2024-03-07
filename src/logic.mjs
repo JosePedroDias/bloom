@@ -151,17 +151,17 @@ export const distributeAroundFlower = (board, centerFlower, yetToDo, onMove, onC
 
     const centerFlowerColors = centerFlower.getExistingColorIndices();
 
-    const candidate1 = findGoodTransfer(atMost5Flowers, centerFlowerColors);
+    const candidate1 = findGoodTransfer(atMost5Flowers, centerFlowerColors, undefined);
     if (!candidate1) return false;
     console.log('candidate1', candidate1);
     
-    const petalsOfOtherColors = candidate1.toFlower.getColorIndicesWithoutColorIdx(candidate1.colorIdx);
+    const otherColors = candidate1.toFlower.getColorIndicesWithoutColorIdx(candidate1.colorIdx);
 
     const atMost4Flowers = atMost5Flowers
     .filter(f => f !== candidate1.toFlower)
     .filter(f => !f.isFull());
 
-    const candidate2 = petalsOfOtherColors && candidate1.toFlower.isFull() ? findGoodTransfer(atMost4Flowers, petalsOfOtherColors, candidate1.toFlower) : undefined;
+    const candidate2 = otherColors && candidate1.toFlower.isFull() ? findGoodTransfer(atMost4Flowers, otherColors, candidate1.toFlower) : undefined;
 
     if (candidate2) {
         console.log('candidate2', candidate2);
