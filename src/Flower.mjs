@@ -122,6 +122,15 @@ export class Flower extends Model {
     }
 
     toString() {
-        return `flower#${this.id} pos:${this.pos.join(',')} startAngle:${this.startAngle}`;
+        return `flower#${this.id} pos:${this.pos.join(',')} hist:${this.getHistogram()}`;
+    }
+
+    clone() {
+        const f = new Flower(this.pos.slice());
+        f.startAngle = this.startAngle;
+        f.colorOrder = this.colorOrder.slice();
+        f.petals = this.petals.map(p => p.clone());
+        f.id = this.id;
+        return f;
     }
 }

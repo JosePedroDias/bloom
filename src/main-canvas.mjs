@@ -1,5 +1,5 @@
 import { getState, distributeAroundFlower, fillNext, isNextEmpty, isGameOver } from './logic.mjs';
-//import { getState } from './edge-cases.mjs';
+//import { getState1, getState2 } from './edge-cases.mjs';
 import { setupTiles, setupUI, boardView } from './view-canvas.mjs';
 import { Canvas, Group } from './canvas.mjs';
 import { sleep, onTickFireSleeps } from './tick-sleep.mjs';

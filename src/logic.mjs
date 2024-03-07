@@ -132,10 +132,10 @@ export const findGoodTransfer = (flowers, myColors, fromFlowerFixed) => {
 }
 
 export const distributeAroundFlower = (board, centerFlower, yetToDo, onMove, onCombo) => {
-    console.log(`distributeAroundFlower: #${centerFlower.id}, ytd:${yetToDo.size}`);
+    // console.log(`distributeAroundFlower: #${centerFlower.id}, ytd:${yetToDo.size}`);
 
     const onTransfer = ({ colorIdx, fromFlower, toFlower }) => {
-        console.log(`#${fromFlower.id} ->(${colorIdx})-> #${toFlower.id} ${toFlower.getHistogram()}`);
+        // console.log(`#${fromFlower.id} ->(${colorIdx})-> #${toFlower.id} ${toFlower.getHistogram()}`);
         
         transferSimple(toFlower, fromFlower, colorIdx);
 
@@ -153,7 +153,7 @@ export const distributeAroundFlower = (board, centerFlower, yetToDo, onMove, onC
 
     const candidate1 = findGoodTransfer(atMost5Flowers, centerFlowerColors, undefined);
     if (!candidate1) return false;
-    console.log('candidate1', candidate1);
+    // console.log('candidate1', candidate1);
     
     const otherColors = candidate1.toFlower.getColorIndicesWithoutColorIdx(candidate1.colorIdx);
 
@@ -164,7 +164,7 @@ export const distributeAroundFlower = (board, centerFlower, yetToDo, onMove, onC
     const candidate2 = otherColors && candidate1.toFlower.isFull() ? findGoodTransfer(atMost4Flowers, otherColors, candidate1.toFlower) : undefined;
 
     if (candidate2) {
-        console.log('candidate2', candidate2);
+        // console.log('candidate2', candidate2);
         onTransfer(candidate2);
     } 
     onTransfer(candidate1);

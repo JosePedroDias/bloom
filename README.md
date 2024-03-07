@@ -11,6 +11,11 @@
 
     http-server . -p 8080 -c-1 --cors &
 
+## exercising the game
+
+- [play](https://josepedrodias.github.io/bloom/)
+- [test](https://josepedrodias.github.io/bloom/test.html)
+
 ## TODO
 
 - logic

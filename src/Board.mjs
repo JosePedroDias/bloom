@@ -46,4 +46,19 @@ export class Board {
         }
         return positions;
     }
+
+    toString() {
+        const cells = this.getAllFilledCells();
+        if (cells.length === 0) return 'empty board';
+        return cells.map(f => f.toString()).join('\n');
+    }
+
+    clone() {
+        const b = new Board();
+        b.cells = new Map();
+        for (const [k, v] of this.cells) {
+            b.cells.set(k, v.clone());
+        }
+        return b;
+    }
 }

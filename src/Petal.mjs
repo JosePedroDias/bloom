@@ -12,4 +12,10 @@ export class Petal extends Model {
     toString() {
         return `petal#${this.id} color:${this.colorIdx} angle:${this.angle}`;
     }
+
+    clone() {
+        const p = new Petal(this.colorIdx, this.pos.slice(), this.angle);
+        p.id = this.id;
+        return p;
+    }
 }

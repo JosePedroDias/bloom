@@ -86,6 +86,37 @@ const scoreView = (score) => {
     }, label);
 }
 
+export function svgWrapper(content, [vx, vy, vw, vh], w=120) {
+    return m(
+        'svg',
+        {
+            style: `width: ${w}px;`,
+            viewBox: `${vx} ${vy} ${vw} ${vh}`,
+        },
+        [
+            content
+        ]
+    );
+}
+
+export const boardView2 = (board) => {
+    const items = [];
+    for (const [xi, yi] of board.getPositions()) {
+        const pos = [xi, yi];
+        const isDark = (xi + yi) % 2;
+        items.push(tileView(pos, isDark));
+
+        const flower = board.get([xi, yi]);
+        if (flower) {
+            for (const petal of flower.petals) {
+                items.push(petalView(petal));
+            }
+            items.push(flowerView(flower));
+        }
+    }
+    return items;
+}
+
 export const boardView = (board, next, score, moving) => {
     //const t = Date.now() / 1000; console.log(`redraw ${t % 100}`);
 

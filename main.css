@@ -10,7 +10,7 @@ body {
     user-select: none;
 }
 
-svg {
+/* svg {
     max-height: 100vh;
 }
 
@@ -35,4 +35,4 @@ path.enter, circle.enter {
 @keyframes fade-out {
     from { opacity: 1; }
     to   { opacity: 0.01; }
-}
+} */
