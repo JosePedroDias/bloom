@@ -1,4 +1,5 @@
 import { times, hsl, lerp, lerp2, nearlyEqual } from './utils.mjs';
+import { easeInOutQuad } from './easing.mjs';
 import { NUM_COLORS } from './Flower.mjs';
 import { NUM_NEXT } from './logic.mjs';
 import { Circle, Square, Path, Label } from './canvas.mjs';
@@ -100,23 +101,25 @@ export const boardView = (board, next, score, moving, canvas) => {
                 trackView(petal.id, petalView);
                 canvas.petals.add(petalView);
             } else {
-                if (petalView.pos[0] !== petalPos[0] || petalView.pos[1] !== petalPos[1]) {
+                if (pad && petalView.pos[0] !== petalPos[0] || petalView.pos[1] !== petalPos[1]) {
                     //console.log(`petal pos changed ${petalView.pos.map(n => n.toFixed(2)).join(',')} -> ${petalPos.map(n => n.toFixed(2)).join(',')}`);
 
-                    const setterPos = (r) => petalView.pos = lerp2(petalView.pos, petalPos, r);
+                    const setterPos = (r) => petalView.pos = lerp2(petalView.pos, petalPos, easeInOutQuad(r));
                     animate(petal, '_pos', setterPos, ANIM_MS);
                 }
-                if (!nearlyEqual(petalView.angle, petal.angle * DEG2RAD)) {
+                if (pad && !nearlyEqual(petalView.angle, petal.angle * DEG2RAD)) {
                     //console.log(`petal angle changed ${(petalView.angle / DEG2RAD).toFixed(0)} -> ${petal.angle}`);
 
                     const a1 = petalView.angle;
                     let a2 = DEG2RAD * petal.angle;
-                    //if (a2 < a1) a2 += Math.PI * 2;
-                    const setterAngle = (r) => petalView.angle = lerp(a1, a2, r);
+                    const setterAngle = (r) => petalView.angle = lerp(a1, a2, easeInOutQuad(r));
                     animate(petal, '_angle', setterAngle, ANIM_MS);
                 }
-                //petalView.pos = petalPos;
-                //petalView.angle = petal.angle * DEG2RAD;
+
+                if (!pad) {
+                    petalView.pos = petalPos;
+                    petalView.angle = petal.angle * DEG2RAD;
+                }
             }
             prevViewIds.delete(petal.id);
         }
