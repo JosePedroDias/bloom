@@ -14,10 +14,19 @@
 ## TODO
 
 - logic
+    - main algorithm
+        - if there's a path of 3 neighbor flowers with the same color, original game always transfers flowers between them through the center one
+        - no use transferring between flowers ad eternum (how to identify an irrelevant sequence?)
+    - drag and drop has a bug. sometimes fails and draws the flower out of place
     - improve flower/board generation progression
     - implement: double flowers...
-    - butterfly...
-    - boosters...
+    - boosters:
+        - reshuffle flowers on board
+        - order a row
+        - order a column
+        - paint 1 flower blue
+        - complete up to 9 flowers
+    - butterfly... (after n points, randomize a booster)
 - visuals
     - (not very relevant at all) show score label where it increases (~ +20XP)
 
