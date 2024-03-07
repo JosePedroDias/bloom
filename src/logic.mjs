@@ -37,7 +37,9 @@ export function getState() {
 
     const moving = { flowerId: undefined, pos: undefined };
 
-    return { board, next, moving, score };
+    const diff = { added: [], removed: [], changed: [] };
+
+    return { board, next, moving, score, diff };
 }
 
 export function isGameOver(board) {

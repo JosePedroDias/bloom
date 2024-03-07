@@ -1,4 +1,4 @@
-import { times, hsl, lerp, lerp2 } from './utils.mjs';
+import { times, hsl, lerp, lerp2, nearlyEqual } from './utils.mjs';
 import { NUM_COLORS } from './Flower.mjs';
 import { NUM_NEXT } from './logic.mjs';
 import { Circle, Square, Path, Label } from './canvas.mjs';
@@ -6,19 +6,22 @@ import { animate } from './tick-sleep.mjs';
 
 const DEG2RAD = Math.PI / 180;
 
-const STROKE_WIDTH = 0.018;
+const STROKE_WIDTH = 0.022;
 const CENTER_RADIUS = 0.12;
 
 const TILE_COLORS = ['#EEE', '#CCC'];
 
 const PETAL_PATH = [
-    [0.5, 0.5],
-    [0.3, 0.1],
-    [0.5, 0],
-    [0.7, 0.1],
+    [0.5, 0.5],// bottom
+
+    [0.33, 0.1], // top left
+    [0.4, 0.02],
+    [0.5, 0  ], // top center
+    [0.6, 0.02],
+    [0.67, 0.1], // top right
 ];
 
-const ANIM_MS = 600;
+const ANIM_MS = 300;
 
 const hues = times(NUM_COLORS).map((i) => i * 360 / NUM_COLORS);
 const PETAL_COLORS = hues.map(h => hsl(h, 75, 55));
@@ -77,14 +80,6 @@ export const boardView = (board, next, score, moving, canvas) => {
             trackView(flower.id, flowerView);
             canvas.flowers.add(flowerView);
         } else {
-            if (flowerView.pos[0] !== flowerPos[0] || flowerView.pos[1] !== flowerPos[1]) {
-                //console.log(`flower pos changed ${flowerView.pos.map(n => n.toFixed(2)).join(',')} -> ${flowerPos.map(n => n.toFixed(2)).join(',')}`);
-
-                /* const p1 = Array.from(flowerView.pos);
-                const p2 = Array.from(flowerPos);
-                const setterPos = (r) => flowerView.pos = lerp2(p1, p2, r);
-                animate(flower, 'pos', setterPos, ANIM_MS); */
-            }
             flowerView.pos = flowerPos;
         }
         prevViewIds.delete(flower.id);
@@ -111,12 +106,12 @@ export const boardView = (board, next, score, moving, canvas) => {
                     const setterPos = (r) => petalView.pos = lerp2(petalView.pos, petalPos, r);
                     animate(petal, '_pos', setterPos, ANIM_MS);
                 }
-                if (petalView.angle !== petal.angle * DEG2RAD) {
+                if (!nearlyEqual(petalView.angle, petal.angle * DEG2RAD)) {
                     //console.log(`petal angle changed ${(petalView.angle / DEG2RAD).toFixed(0)} -> ${petal.angle}`);
 
                     const a1 = petalView.angle;
                     let a2 = DEG2RAD * petal.angle;
-                    if (a2 < a1) a2 += Math.PI * 2;
+                    //if (a2 < a1) a2 += Math.PI * 2;
                     const setterAngle = (r) => petalView.angle = lerp(a1, a2, r);
                     animate(petal, '_angle', setterAngle, ANIM_MS);
                 }

@@ -1,7 +1,40 @@
 const PI2 = 2 * Math.PI;
 
-export class Canvas {
+class Node {
+    constructor() {
+        this.children = [];
+    }
+
+    add(o) {
+        this.children.push(o);
+    }
+
+    remove(o) {
+        const idx = this.children.indexOf(o);
+        if (idx === -1 && this.children) {
+            for (const o2 of this.children.toReversed()) {
+                if (!o2.remove) continue;
+                const res = o2.remove(o);
+                if (res) return true;
+            }
+        } else if (idx >= 0) {
+            this.children.splice(idx, 1);
+            return true;
+        }
+        return false;
+    }
+
+    dispose() {
+        for (const o of this.children) {
+            o.dispose?.();
+        }
+    }
+}
+
+export class Canvas extends Node {
     constructor(dims = [400, 300], scale = 1, scaleToFit = false, useDpi = false) {
+        super();
+
         const dpi = useDpi ? window.devicePixelRatio : 1;
 
         this.dims = Array.from(dims);
@@ -23,8 +56,6 @@ export class Canvas {
         document.body.appendChild(el);
         this.el = el;
         this.ctx = el.getContext('2d');
-
-        this.children = [];
 
         if (scaleToFit) {
             this.ar = dims[0] / dims[1];
@@ -60,24 +91,7 @@ export class Canvas {
         }
     }
 
-    add(o) {
-        this.children.push(o);
-    }
-
-    remove(o) {
-        const idx = this.children.indexOf(o);
-        if (idx === -1 && this.children) {
-            for (const o2 of this.children.toReversed()) {
-                if (!o2.remove) continue;
-                const res = o2.remove(o);
-                if (res) return true;
-            }
-        } else if (idx >= 0) {
-            this.children.splice(idx, 1);
-            return true;
-        }
-        return false;
-    }
+    
 
     drawFrame() {
         this.ctx.clearRect(0, 0, this.dims[0], this.dims[1]);
@@ -92,29 +106,11 @@ export class Canvas {
     }
 }
 
-export class Group {
+export class Group extends Node {
     constructor(translate = [0, 0]) {
-        this.children = [];
+        super();
+
         this.translate = translate;
-    }
-
-    add(o) {
-        this.children.push(o);
-    }
-
-    remove(o) {
-        const idx = this.children.indexOf(o);
-        if (idx === -1 && this.children) {
-            for (const o2 of this.children.toReversed()) {
-                if (!o2.remove) continue;
-                const res = o2.remove(o);
-                if (res) return true;
-            }
-        } else if (idx >= 0) {
-            this.children.splice(idx, 1);
-            return true;
-        }
-        return false;
     }
 
     render(ctx) {

@@ -15,7 +15,7 @@ let canvas;
 let redraw;
 let movePositions = [];
 
-const { board, next, score, moving } = getState();
+const { board, next, score, moving, diff } = getState();
 
 let processing = false;
 
@@ -69,11 +69,10 @@ const handleMove = async ([from, to]) => {
     const nextI = from[0] -1;
     if (to[0] < 1 || to[0] > 4 || 
         to[1] < 1 || to[1] > 6) {
-        console.log('TODO FIX REWIND');
+        // rewind it back to the tray
         const flower = next[nextI];
-        const from2 = [nextI, 7];
-        console.log({from: from.join(','), from2: from2.join(',')});
-        flower.setPos(from2);
+        flower.setPos(flower.pastPos);
+        delete flower.pastPos;
         flower.pos = Array.from(from);
         redraw();
         return;
@@ -89,6 +88,7 @@ const handleMove = async ([from, to]) => {
 
     if (!newFlower || toCell) return;
 
+    delete newFlower.pastPos;
     newFlower.setPos(pos);
 
     board.add(newFlower);
@@ -124,15 +124,16 @@ const onMouse = (i) => (ev) => {
             const j = x - 1;
             const flower = next[j];
             if (!flower) return;
+            flower.pastPos = Array.from(flower.pos);
             moving.flowerId = flower.id;
             moving.pos = [x, y];
         }
 
         movePositions.push([x, y]);
         if (i === 1) {
+            moving.flowerId = undefined;
             handleMove(movePositions);
             movePositions = [];
-            moving.flowerId = undefined;
         }
     }
     else if (moving.flowerId) {
@@ -157,20 +158,29 @@ const onMouse = (i) => (ev) => {
     el.addEventListener('touchend',   onMouse(1));
     el.addEventListener('touchmove',  onMouse(2));
 
-    const squaresLay = new Group();
-    const petalsLay = new Group();
-    const flowersLay = new Group();
-    const uiLay = new Group();
+    const boardG   = new Group();
+    const trayG    = new Group();
 
-    canvas.add(squaresLay);
-    canvas.add(petalsLay);
-    canvas.add(flowersLay);
-    canvas.add(uiLay);
+    const squaresG = new Group();
+    const petalsG  = new Group();
+    const flowersG = new Group();
+    const uiG      = new Group();
 
-    canvas.squares = squaresLay;
-    canvas.flowers = flowersLay;
-    canvas.petals  = petalsLay;
-    canvas.ui      = uiLay;
+    canvas.add(boardG); // TODO
+    canvas.add(trayG);  // TODO
+
+    canvas.add(squaresG);
+    canvas.add(petalsG);
+    canvas.add(flowersG);
+    canvas.add(uiG);
+
+    canvas.board   = boardG;
+    canvas.tray    = trayG;
+
+    canvas.squares = squaresG;
+    canvas.petals  = petalsG;
+    canvas.flowers = flowersG;
+    canvas.ui      = uiG;
 
     setupTiles(board, canvas);
 

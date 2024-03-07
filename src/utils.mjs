@@ -95,3 +95,7 @@ export function pingPongRatio(ratio) {
     }
     return 1 - (ratio - 0.5) * 2;
 }
+
+export function nearlyEqual(a, b, epsilon = 0.001) {
+    return Math.abs(a - b) < epsilon;
+}
