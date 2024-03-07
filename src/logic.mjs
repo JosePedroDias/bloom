@@ -101,59 +101,50 @@ export const handleFlower = (board, f, yetToDo, onCombo) => {
     return false;
 }
 
-export const distributeAroundFlower = (board, toFlower, yetToDo, exhausted, onMove, onCombo) => {
+export const distributeAroundFlower = (board, toFlower0, yetToDo, exhausted, onMove, onCombo) => {
     // console.log(`fId:${toFlower.id}, ytd:${yetToDo.size}`);
 
-    const surroundingFlowers = board.getNeighbors(toFlower.pos);
+    const surroundingFlowers = [toFlower0, ...board.getNeighbors(toFlower0.pos)];
     shuffleInPlace(surroundingFlowers);
 
-    const myColors = toFlower.getExistingColorIndices();
+    const myColors = toFlower0.getExistingColorIndices();
 
     const candidates = [];
 
     for (const myColor of myColors) {
-        const myCount = toFlower.getNumberOfPetalsWithColor(myColor);
-
-        let totalCount = myCount;
-
-        const candidate = { colorIdx: myColor, myCount, from: [] };
+        const candidate = { colorIdx: myColor, from: [] };
 
         for (const flower2 of surroundingFlowers) {
-            const otherCount = flower2.getNumberOfPetalsWithColor(myColor);
-            if (otherCount > 0) {
-                totalCount += otherCount;
-                candidate.from.push({ flower: flower2, count: otherCount });
-            }
+            const count = flower2.getNumberOfPetalsWithColor(myColor);
+            if (count === 0) continue;
+            candidate.from.push({ flower: flower2, count });
         }
 
-        candidate.totalCount = totalCount;
-
-        if (candidate.from.length > 0) candidates.push(candidate);
+        if (candidate.from.length > 1) {
+            candidate.total = candidate.from.reduce((sum, { count }) => sum + count, 0);
+            candidates.push(candidate);
+        }
     }
 
     if (candidates.length > 0) {
-        candidates.sort((a, b) => b.totalCount - a.totalCount); // descending
-        const max = candidates[0].totalCount;
-
-        const candidateWithMax = candidates.filter(c => c.totalCount === max);
-        shuffleInPlace(candidateWithMax);
-
-        const candidate = candidateWithMax[0];
+        candidates.sort((a, b) => b.total - a.total); // descending
+        const candidate = candidates[0];
 
         const colorIdx = candidate.colorIdx;
-
-        candidate.from.sort((a, b) => a.count - b.count); // ascending
-
-        const fromFlower = candidate.from[0].flower;
+        const from = candidate.from;
+        from.sort((a, b) => b.count - a.count); // descending
+        const toFlower   = from[0].flower;
+        const fromFlower = from[from.length - 1].flower;
 
         const petalsOfOtherColors = toFlower.getPetalsWithoutColor(colorIdx);
         shuffleInPlace(petalsOfOtherColors);
-        if (petalsOfOtherColors.length > 0 && surroundingFlowers.length > 0) {
+        if (petalsOfOtherColors.length > 0 && surroundingFlowers.length > 1) {
             const colorIdx2 = petalsOfOtherColors[0].colorIdx;
 
             const candidates2 = [];
             shuffleInPlace(surroundingFlowers);
             for (const flower2 of surroundingFlowers) {
+                if (flower2 === toFlower) continue;
                 if (flower2.isFull()) continue;
                 const otherCount = flower2.getNumberOfPetalsWithColor(colorIdx2);
                 if (otherCount === 0) continue;
@@ -179,7 +170,6 @@ export const distributeAroundFlower = (board, toFlower, yetToDo, exhausted, onMo
         const key = `#${fromFlower.id} ->(${colorIdx})-> #${toFlower.id} ${toFlower.getHistogram()}`;
         if (exhausted.has(key)) return false;
         exhausted.add(key);
-        // console.log(key);
 
         transferSimple(toFlower, fromFlower, colorIdx);
 

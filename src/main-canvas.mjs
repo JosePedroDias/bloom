@@ -103,7 +103,7 @@ const handleMove = async ([from, to]) => {
 // 0=down, 1=up, 2=move
 const onMouse = (i) => (ev) => {
     if (processing) return;
-    
+
     const canvasEl = canvas.el;
     const { top, left, width, height } = canvasEl.getBoundingClientRect();
 
@@ -201,7 +201,6 @@ const onMouse = (i) => (ev) => {
 
 let running = true;
 let gameT = 0;
-let speedMultiplier = 1;
 let tPrev = -1 / 60;
 function onTick(t) {
     requestAnimationFrame(onTick);
@@ -213,11 +212,9 @@ function onTick(t) {
     let dt = t - tPrev;
     if (dt > 1) dt = 1 / 60; // cap max read DT if above 1 sec (assume coming from background)
 
-    dt *= speedMultiplier;
-
     gameT += dt;
 
-    document.title = `fps: ${(1 / dt).toFixed(0)} speed: ${speedMultiplier.toFixed(2)}x | bloom`;
+    document.title = `fps: ${(1 / dt).toFixed(0)} | bloom`;
 
     onTickFireSleeps();
 
@@ -231,15 +228,4 @@ onTick(0);
 document.addEventListener('visibilitychange', () => {
     running = !document.hidden;
     console.log(`running: ${running}`);
-});
-
-document.addEventListener('keydown', (ev) => {
-    if (ev.key === '1') speedMultiplier = 1/9;
-    if (ev.key === '2') speedMultiplier = 1/3;
-    if (ev.key === '3') speedMultiplier = 1;
-    if (ev.key === '4') speedMultiplier = 3;
-    if (ev.key === '5') speedMultiplier = 9;
-    else return;
-    ev.preventDefault();
-    ev.stopPropagation();
 });

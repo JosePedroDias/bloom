@@ -3,7 +3,7 @@
 ## concept
 
 - based on bloom sort mechanics
-- simplest ui possible with svg mithril rendering
+- ~simplest ui possible with svg mithril rendering~ using canvas
 
 ## how to use
 
