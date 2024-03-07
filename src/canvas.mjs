@@ -92,9 +92,10 @@ export class Canvas {
     }
 }
 
-export class Layer {
-    constructor() {
+export class Group {
+    constructor(translate = [0, 0]) {
         this.children = [];
+        this.translate = translate;
     }
 
     add(o) {
@@ -117,8 +118,17 @@ export class Layer {
     }
 
     render(ctx) {
+        const [tx, ty] = this.translate;
+        const needsTranslate = tx !== 0 || ty !== 0;
+        if (needsTranslate) {
+            ctx.save();
+            ctx.translate(tx, ty);
+        }
         for (const o of this.children) {
             o.render(ctx);
+        }
+        if (needsTranslate) {
+            ctx.restore();
         }
     }
 }

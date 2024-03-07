@@ -1,7 +1,8 @@
-import { times, hsl } from './utils.mjs';
+import { times, hsl, lerp, lerp2 } from './utils.mjs';
 import { NUM_COLORS } from './Flower.mjs';
 import { NUM_NEXT } from './logic.mjs';
 import { Circle, Square, Path, Label } from './canvas.mjs';
+import { animate } from './tick-sleep.mjs';
 
 const DEG2RAD = Math.PI / 180;
 
@@ -16,6 +17,8 @@ const PETAL_PATH = [
     [0.5, 0],
     [0.7, 0.1],
 ];
+
+const ANIM_MS = 600;
 
 const hues = times(NUM_COLORS).map((i) => i * 360 / NUM_COLORS);
 const PETAL_COLORS = hues.map(h => hsl(h, 75, 55));
@@ -75,7 +78,12 @@ export const boardView = (board, next, score, moving, canvas) => {
             canvas.flowers.add(flowerView);
         } else {
             if (flowerView.pos[0] !== flowerPos[0] || flowerView.pos[1] !== flowerPos[1]) {
-                console.log(`flower pos changed ${flowerView.pos.map(n => n.toFixed(2)).join(',')} -> ${flowerPos.map(n => n.toFixed(2)).join(',')}`);
+                //console.log(`flower pos changed ${flowerView.pos.map(n => n.toFixed(2)).join(',')} -> ${flowerPos.map(n => n.toFixed(2)).join(',')}`);
+
+                /* const p1 = Array.from(flowerView.pos);
+                const p2 = Array.from(flowerPos);
+                const setterPos = (r) => flowerView.pos = lerp2(p1, p2, r);
+                animate(flower, 'pos', setterPos, ANIM_MS); */
             }
             flowerView.pos = flowerPos;
         }
@@ -98,13 +106,22 @@ export const boardView = (board, next, score, moving, canvas) => {
                 canvas.petals.add(petalView);
             } else {
                 if (petalView.pos[0] !== petalPos[0] || petalView.pos[1] !== petalPos[1]) {
-                    console.log(`petal pos changed ${petalView.pos.map(n => n.toFixed(2)).join(',')} -> ${petalPos.map(n => n.toFixed(2)).join(',')}`);
+                    //console.log(`petal pos changed ${petalView.pos.map(n => n.toFixed(2)).join(',')} -> ${petalPos.map(n => n.toFixed(2)).join(',')}`);
+
+                    const setterPos = (r) => petalView.pos = lerp2(petalView.pos, petalPos, r);
+                    animate(petal, '_pos', setterPos, ANIM_MS);
                 }
                 if (petalView.angle !== petal.angle * DEG2RAD) {
-                    console.log(`petal angle changed ${(petalView.angle / DEG2RAD).toFixed(0)} -> ${petal.angle}`);
+                    //console.log(`petal angle changed ${(petalView.angle / DEG2RAD).toFixed(0)} -> ${petal.angle}`);
+
+                    const a1 = petalView.angle;
+                    let a2 = DEG2RAD * petal.angle;
+                    if (a2 < a1) a2 += Math.PI * 2;
+                    const setterAngle = (r) => petalView.angle = lerp(a1, a2, r);
+                    animate(petal, '_angle', setterAngle, ANIM_MS);
                 }
-                petalView.pos = petalPos;
-                petalView.angle = petal.angle * DEG2RAD;
+                //petalView.pos = petalPos;
+                //petalView.angle = petal.angle * DEG2RAD;
             }
             prevViewIds.delete(petal.id);
         }

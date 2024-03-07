@@ -1,6 +1,6 @@
 import { getState, distributeAroundFlower, fillNext, isNextEmpty, isGameOver } from './logic.mjs';
 import { setupTiles, setupUI, boardView } from './view-canvas.mjs';
-import { Canvas, Layer } from './canvas.mjs';
+import { Canvas, Group } from './canvas.mjs';
 import { sleep, onTickFireSleeps } from './tick-sleep.mjs';
 
 const CW = 6;
@@ -157,10 +157,10 @@ const onMouse = (i) => (ev) => {
     el.addEventListener('touchend',   onMouse(1));
     el.addEventListener('touchmove',  onMouse(2));
 
-    const squaresLay = new Layer();
-    const petalsLay = new Layer();
-    const flowersLay = new Layer();
-    const uiLay = new Layer();
+    const squaresLay = new Group();
+    const petalsLay = new Group();
+    const flowersLay = new Group();
+    const uiLay = new Group();
 
     canvas.add(squaresLay);
     canvas.add(petalsLay);

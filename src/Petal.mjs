@@ -1,12 +1,12 @@
-import { uniqueInt } from './utils.mjs';
+import { Model } from './Model.mjs';
 
-export class Petal {
+export class Petal extends Model {
     constructor(colorIdx, pos = [0, 0], angle = 0) {
+        super();
+        
         this.colorIdx = colorIdx;
         this.pos = pos;
         this.angle = angle;
-        
-        this.id = uniqueInt();
     }
 
     toString() {
