@@ -16,7 +16,7 @@
 - logic
     - main algorithm
         - if there's a path of 3 neighbor flowers with the same color, original game always transfers flowers between them through the center one
-        - no use transferring between flowers ad eternum (how to identify an irrelevant sequence?)
+        - [maybe fixed?] no use transferring between flowers ad eternum (how to identify an irrelevant sequence?)
     - drag and drop has a bug. sometimes fails and draws the flower out of place
     - improve flower/board generation progression
     - implement: double flowers...

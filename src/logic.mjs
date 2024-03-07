@@ -161,7 +161,7 @@ export const distributeAroundFlower = (board, centerFlower, yetToDo, onMove, onC
     .filter(f => f !== candidate1.toFlower)
     .filter(f => !f.isFull());
 
-    const candidate2 = petalsOfOtherColors ? findGoodTransfer(atMost4Flowers, petalsOfOtherColors, candidate1.toFlower) : undefined;
+    const candidate2 = petalsOfOtherColors && candidate1.toFlower.isFull() ? findGoodTransfer(atMost4Flowers, petalsOfOtherColors, candidate1.toFlower) : undefined;
 
     if (candidate2) {
         console.log('candidate2', candidate2);
