@@ -67,9 +67,18 @@ const handleMove = async ([from, to]) => {
     if (from[1] !== 8) return;
 
     const nextI = from[0] -1;
+    const newFlower = next[nextI];
+
+    const pos = [
+        to[0] - 1,
+        to[1] - 1,
+    ];
+
+    const toCell = board.get(pos);
+
     if (to[0] < 1 || to[0] > 4 || 
-        to[1] < 1 || to[1] > 6) {
-        // rewind it back to the tray
+        to[1] < 1 || to[1] > 6 || !newFlower || toCell) {
+        // rewind it back to the tray - TODO: not yet perfect.
         const flower = next[nextI];
         flower.setPos(flower.pastPos);
         delete flower.pastPos;
@@ -77,16 +86,6 @@ const handleMove = async ([from, to]) => {
         redraw();
         return;
     }
-
-    const pos = [
-        to[0] - 1,
-        to[1] - 1,
-    ];
-
-    const newFlower = next[nextI];
-    const toCell = board.get(pos);
-
-    if (!newFlower || toCell) return;
 
     delete newFlower.pastPos;
     newFlower.setPos(pos);
@@ -103,6 +102,8 @@ const handleMove = async ([from, to]) => {
 
 // 0=down, 1=up, 2=move
 const onMouse = (i) => (ev) => {
+    if (processing) return;
+    
     const canvasEl = canvas.el;
     const { top, left, width, height } = canvasEl.getBoundingClientRect();
 

@@ -109,21 +109,38 @@ export const boardView = (board, next, score, moving) => {
     }
 
     for (let i = 0; i < NUM_NEXT; ++i) {
-        let pos = [1 + i, 8];
+        const flower = next[i];
+        if (!flower) continue;
+
+        let pos, pad = true;
+        if (flower.id === moving.flowerId) {
+            const [a, b] = moving.pos;
+            pos = [
+                a + 0.5,
+                b + 0.5,
+            ];
+            flower.setPos(flowerPos);
+            pad = false;
+        } else {
+            pos = [
+                i + 1.5,
+                7 + 1.5,
+            ];
+        }
+
         const isDark = [pos[0] + pos[1] + 1] % 2;
         tiles.push(tileView(pos, isDark));
 
-        const flower = next[i];
-        if (flower) {
-            let immediate = false;
-            if (moving.flowerId === flower.id) {
-                pos = moving.pos;
-                immediate = true;
-            }
-            flowers.push(flowerView(flower, pos, immediate));
-            for (const petal of flower.petals) {
-                petals.push(petalView(petal, pos, immediate));
-            }
+        let immediate = false;
+        if (moving.flowerId === flower.id) {
+            pos = moving.pos;
+            immediate = true;
+        }
+        console.log('tray flower', pos, immediate);
+        flowers.push(flowerView(flower, pos, immediate));
+        for (const petal of flower.petals) {
+            console.log('tray petal', pos, immediate);
+            petals.push(petalView(petal, pos, immediate));
         }
     }
 

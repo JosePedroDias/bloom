@@ -66,12 +66,22 @@ const organizeBoard = async (optFlower) => {
 }
 
 const handleMove = async ([from, to]) => {
-    if (processing) return;
+    if (processing || !from || !to) return;
     if (from[1] !== 8) return;
-    if (to[0] < 1 || to[0] > 4) return;
-    if (to[1] < 1 || to[1] > 6) return;
 
     const nextI = from[0] -1;
+
+    if (to[0] < 1 || to[0] > 4 || 
+        to[1] < 1 || to[1] > 6) {
+        // rewind it back to the tray
+        const flower = next[nextI];
+        flower.setPos(flower.pastPos);
+        delete flower.pastPos;
+        flower.pos = Array.from(from);
+        redraw();
+        return;
+    }
+
     const pos = [
         to[0] - 1,
         to[1] - 1,
@@ -82,11 +92,12 @@ const handleMove = async ([from, to]) => {
 
     if (!newFlower || toCell) return;
 
+    delete newFlower.pastPos;
     newFlower.setPos(pos);
 
     board.add(newFlower);
-    next.splice(nextI, 1);
-    if (next.length === 0) fillNext(next);
+    next[nextI] = undefined;
+    if (isNextEmpty(next)) fillNext(next);
 
     redraw();
     await sleep(MOVE_MS);
@@ -117,6 +128,7 @@ const onMouse = (i) => (ev) => {
             const j = x - 1;
             const flower = next[j];
             if (!flower) return;
+            flower.pastPos = Array.from(flower.pos);
             moving.flowerId = flower.id;
             moving.pos = [x, y];
         }
